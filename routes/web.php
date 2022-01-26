@@ -22,7 +22,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/admin-dashboard', function () {
             return view('admin.dashboard');
-        })->name('admin.dashboard');
+        })->middleware('admin')->name('admin.dashboard');
        
     
 
