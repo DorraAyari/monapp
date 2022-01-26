@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Category;
-use App\Product;
+use App\Catalogue;
+
+use App\Produit;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -29,8 +30,8 @@ class HomeController extends Controller
     }
     public function welcome()
     {
-        $categories = Category::get('name');
-        $products = Product::inRandomOrder()->limit(6)->get();
+        $categories = Catalogue::get('name');
+        $products = Produit::inRandomOrder()->limit(6)->get();
         return view('welcome', [
             'categories' => $categories,
             'products' => $products
