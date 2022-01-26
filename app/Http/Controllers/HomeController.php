@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Catalogue;
-
+use App\Category;
+use App\Product;
 use App\Produit;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth')->except('welcome');
+        // $this->middleware('auth')->except('welcome');
     }
 
     /**
@@ -28,6 +29,7 @@ class HomeController extends Controller
     {
         return view('home');
     }
+
     public function welcome()
     {
         $categories = Catalogue::get('name');
