@@ -1,9 +1,8 @@
 <?php
 
-use App\Customer;
 use Illuminate\Database\Seeder;
-
-class CustomersTableSeeder extends Seeder
+use App\Panier;
+class PanierTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -12,9 +11,6 @@ class CustomersTableSeeder extends Seeder
      */
     public function run()
     {
-      
-        factory(Customer::class, 10)->create();
-
-
+        factory(Panier::class,10)->create();
     }
 }

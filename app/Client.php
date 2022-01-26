@@ -2,16 +2,15 @@
 
 namespace App;
 
-
 use Illuminate\Database\Eloquent\Model;
 
-class Customer extends Model
+class Client extends Model
 {
-   
     protected $guarded = [];
-
-    public function orders()
+    
+    public function panier()
     {
-        return $this->hasMany('App\Order');
+        return $this->hasOne('App\Panier');
     }
+ 
 }
