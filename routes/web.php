@@ -17,12 +17,12 @@ Auth::routes();
 
 Route::middleware('auth')->group(function () {
     Route::get('/home', 'HomeController@index')->name('home');
-
+});
     // admin middleware route group
 
-        Route::get('/dashboard', function () {
+        Route::get('/admin-dashboard', function () {
             return view('admin.dashboard');
         })->name('admin.dashboard');
        
-    });
+    
 
