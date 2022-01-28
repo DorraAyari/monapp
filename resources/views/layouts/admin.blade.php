@@ -53,25 +53,25 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ route('commandes.index') }}">
               <span data-feather="file"></span>
               Orders
             </a>
           </li>
           <li class="nav-item">
-              <a class="nav-link" ">
+              <a class="nav-link" href="{{ route('clients.index') }}">
                 <span data-feather="users"></span>
                 Customers
             </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">
+          <a class="nav-link" href="{{ route('produits.index') }}">
             <span data-feather="shopping-cart"></span>
             Products
           </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ route('catalogues.index') }}">
                 <span data-feather="bar-chart-2"></span>
                 Categories
             </a>

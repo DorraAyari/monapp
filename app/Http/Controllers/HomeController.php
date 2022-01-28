@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Catalogue;
-use App\Category;
-use App\Product;
-use App\Produit;
 use Illuminate\Http\Request;
-
+use App\Catalogue;
+use App\Produit;
 class HomeController extends Controller
 {
     /**
@@ -17,7 +14,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth')->except('welcome');
+      $this->middleware('auth')->except('welcome');
     }
 
     /**
@@ -29,14 +26,14 @@ class HomeController extends Controller
     {
         return view('home');
     }
-
     public function welcome()
     {
-        $categories = Catalogue::get('name');
-        $products = Produit::inRandomOrder()->limit(6)->get();
-        return view('welcome', [
-            'categories' => $categories,
-            'products' => $products
+        $catalogue = Catalogue::get('name');
+        $produits= Produit::inRandomOrder()->limit(6)->get();
+        return view('welcome',[
+            'catalogues'=> $catalogue, 
+            'produits'=>$produits
         ]);
+        
     }
 }
