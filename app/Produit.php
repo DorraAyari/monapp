@@ -26,4 +26,10 @@ class Produit extends Model
     {
         return $this->hasMany('App\Panier');
     }
+    public function getPrice()
+    {
+        $price = $this->price / 100;
+
+        return number_format($price, 2, ',', ' ') . ' €';
+    }
 }
