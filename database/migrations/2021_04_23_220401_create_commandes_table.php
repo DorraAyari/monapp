@@ -15,13 +15,14 @@ class CreateCommandesTable extends Migration
     {
         Schema::create('commandes', function (Blueprint $table) {
             $table->increments('id');
-            $table->date('date_commande');
+            $table->datetime('date_commande');
             $table->integer('num_commande');
             $table->string('email');
             $table->double('prix_commande');
             $table->string('description_commande');
             $table->integer('amount');
             $table->text('products');
+            
             $table->integer('panier_id')->unsigned();
             $table->timestamps();
             $table->foreign('panier_id')->references('id')->on('paniers')->onDelete('cascade')->onUpdate('cascade');

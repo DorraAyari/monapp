@@ -1,14 +1,17 @@
 <?php
+
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\Session;
-use Gloudemans\Shoppingcart\Facades\Cart;
+
+use App\Commande;
+use DateTime;
+use App\Produit;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
-use App\Commande;
-use App\Produit;
-use DateTime;
+use Illuminate\Support\Facades\Session;
+use Gloudemans\Shoppingcart\Facades\Cart;
+
 class CheckController extends Controller
 {
     /**
@@ -16,35 +19,61 @@ class CheckController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(){
+    public function index()
+    {
         if (Cart::count() <= 0) {
-        return redirect()->route('produit.index');
-    }
+            return redirect()->route('check.index');
+        }
 
-    Stripe::setApiKey('sk_test_3WteeitM6Wi4AK3SdJzBrm7300qGrAamxX');
+        Stripe::setApiKey('sk_test_lsIwI7kLHVgpDTyumYN5DTBO008UcOzAdz');
+
+        if (request()->session()->has('coupon')) {
+            $total = (Cart::subtotal() - request()->session()->get('coupon')['remise']) + (Cart::subtotal() - request()->session()->get('coupon')['remise']) * (config('cart.tax') / 100);
+        } else {
+            $total = Cart::total();
+        }
 
         $intent = PaymentIntent::create([
-            'amount' => round(Cart::total()),
+            'amount' => round($total),
             'currency' => 'eur'
         ]);
 
+        $clientSecret = Arr::get($intent, 'client_secret');
+
         return view('check.index', [
-            'clientSecret' => Arr::get($intent, 'clientSecret')
+            'clientSecret' => $clientSecret,
+            'total' => $total
         ]);
     }
 
-    /**********
-     * Charge the client.
+    /**
+     * Show the form for creating a new resource.
      *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
+        if ($this->checkIfNotAvailable()) {
+            Session::flash('error', 'Un produit dans votre panier n\'est plus disponible.');
+            return response()->json(['success' => false], 400);
+        }
+
         $data = $request->json()->all();
 
         $commande = new Commande();
 
-        $commande->id = $data['paymentIntent']['id'];
+        $commande->panier_id = $data['paymentIntent']['id'];
         $commande->amount = $data['paymentIntent']['amount'];
 
         $commande->date_commande = (new DateTime())
@@ -55,17 +84,18 @@ class CheckController extends Controller
         $i = 0;
 
         foreach (Cart::content() as $produit) {
-            $produits['produit' . $i][] = $produit->model->produits_nom;
-            $produits['produit' . $i][] = $produit->model->price;
-    
+            $products['produit_' . $i][] = $produit->model->produits_nom;
+            $products['produit_' . $i][] = $produit->model->price;
+            $products['produit_' . $i][] = $produit->qty;
             $i++;
         }
 
-        $commande->produits = serialize($produits);
-        $commande->num_commande = 15;
+        $commande->products = serialize($products);
+        $commande->id = Auth()->user()->id;
         $commande->save();
 
         if ($data['paymentIntent']['status'] === 'succeeded') {
+            $this->updateStock();
             Cart::destroy();
             Session::flash('success', 'Votre commande a été traitée avec succès.');
             return response()->json(['success' => 'Payment Intent Succeeded']);
@@ -76,7 +106,72 @@ class CheckController extends Controller
 
     public function thankyou()
     {
-        return view('check.thankyou');
-     //   return Session::has('success') ? view('check.thankyou') : redirect()->route('check.thankyou');
+        return Session::has('success') ? view('check.thankYou') : redirect()->route('check.index');
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
+    }
+
+    private function checkIfNotAvailable()
+    {
+        foreach (Cart::content() as $item) {
+            $product = Produit::find($item->model->id);
+
+            if ($product->stock < $item->qty) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function updateStock()
+    {
+        foreach (Cart::content() as $item) {
+            $product = Produit::find($item->model->id);
+            $product->update(['stock' => $product->stock - $item->qty]);
+        }
     }
 }

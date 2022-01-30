@@ -1,4 +1,6 @@
 <?php
+
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,12 +35,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/panier/ajouter', 'CartController@store')->name('cart.store');
         Route::get('/panier', 'CartController@index')->name('cart.index');
         Route::delete('/panier/{rowId}', 'CartController@destroy')->name('cart.destroy');
-    
-    
+        Route::post('/coupon', 'CartController@storeCoupon')->name('cart.store.coupon');
+    Route::delete('/coupon', 'CartController@destroyCoupon')->name('cart.destroy.coupon');
+
         Route::get('/paiement', 'CheckController@index')->name('check.index');
-        Route::post('/paiement', 'CheckController@charge')->name('check.charge');
         Route::post('/paiement', 'CheckController@store')->name('check.store');
         Route::get('/merci', 'CheckController@thankyou')->name('check.thankyou');
-        Route::get('/videpanier', function () {
-            Cart::destroy();
-        });
+ 

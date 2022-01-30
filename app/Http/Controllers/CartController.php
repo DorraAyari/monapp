@@ -1,11 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Coupon;
+use App\Produit;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Http\Request;
-
-use App\Produit;
-
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 
 class CartController extends Controller
 {
@@ -37,7 +39,6 @@ class CartController extends Controller
      */
     public function store(Request $request)
     {
-     
         $duplicata = Cart::search(function ($cartItem, $rowId) use ($request) {
             return $cartItem->id == $request->id;
         });
@@ -46,12 +47,30 @@ class CartController extends Controller
             return redirect()->route('welcome')->with('success', 'Le produit a déjà été ajouté.');
         }
 
-        $produit = produit::find($request->id);
+        $product = Produit::find($request->id);
 
-        Cart::add($request->id, $request->produits_nom, 1, $request->price)
-        ->associate('App\Produit');
+        Cart::add($product->id, $product->produits_nom, 1, $product->price)
+            ->associate('App\Produit');
 
-    return redirect()->route('welcome')->with('success', 'Le produit a bien été ajouté.');
+        return redirect()->route('welcome')->with('success', 'Le produit a bien été ajouté.');
+    }
+
+    public function storeCoupon(Request $request)
+    {
+        $code = $request->get('code');
+
+        $coupon = Coupon::where('code', $code)->first();
+
+        if (!$coupon) {
+            return redirect()->back()->with('error', 'Le coupon est invalide.');
+        }
+
+        $request->session()->put('coupon', [
+            'code' => $coupon->code,
+            'remise' => $coupon->discount(Cart::subtotal())
+        ]);
+
+        return redirect()->back()->with('success', 'Le coupon est appliqué.');
     }
 
     /**
@@ -83,9 +102,28 @@ class CartController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $rowId)
     {
-        //
+        $data = $request->json()->all();
+
+        $validates = Validator::make($request->all(), [
+            'qty' => 'numeric|required|between:1,5',
+        ]);
+
+        if ($validates->fails()) {
+            Session::flash('error', 'La quantité doit est comprise entre 1 et 5.');
+            return response()->json(['error' => 'Cart Quantity Has Not Been Updated']);
+        }
+
+        if ($data['qty'] > $data['stock']) {
+            Session::flash('error', 'La quantité de ce produit n\'est pas disponible.');
+            return response()->json(['error' => 'Product Quantity Not Available']);
+        }
+
+        Cart::update($rowId, $data['qty']);
+
+        Session::flash('success', 'La quantité du produit est passée à ' . $data['qty'] . '.');
+        return response()->json(['success' => 'Cart Quantity Has Been Updated']);
     }
 
     /**
@@ -99,5 +137,12 @@ class CartController extends Controller
         Cart::remove($rowId);
 
         return back()->with('success', 'Le produit a été supprimé.');
+    }
+
+    public function destroyCoupon()
+    {
+        request()->session()->forget('coupon');
+
+        return redirect()->back()->with('success', 'Le coupon a été retiré.');
     }
 }
