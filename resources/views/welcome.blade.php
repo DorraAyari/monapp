@@ -6,7 +6,8 @@
     
 <div class="row">
     <div class="col-lg-3">
-        
+        @yield('extra-script')
+
   
         <h1 class="my-4">Catégorie</h1>
         <div class="list-group">
@@ -72,11 +73,12 @@
             </div>
             @endforeach
       
-      
+            @yield('extra-js')
           
      
             
         </div>
     </div>
 </div>
+
 @endsection

@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Product;
-use App\Produit;
 use Gloudemans\Shoppingcart\Facades\Cart;
+use Stripe\Stripe;
+use Stripe\PaymentIntent;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
-class CartController extends Controller
+class CheckoutController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +17,18 @@ class CartController extends Controller
      */
     public function index()
     {
-        return view('cart.index');
+        Stripe::setApiKey('sk_test_51IzKayAtP2OSxSbSYbo3bi2QHbYdtoZc0Dk8AGR5n6KKuIw1ZObOpF3sAts3WELdtykp7QAEu2xCpzEv6WVWN5PE00qPdqI9VQ');
+
+        $intent = PaymentIntent::create([
+            'amount' => round(Cart::total()),
+            'currency' => 'eur',
+        ]);
+
+        $clientSecret = Arr::get($intent, 'client_secret');
+
+        return view('checkout.index', [
+            'clientSecret' => $clientSecret
+        ]);
     }
 
     /**
@@ -37,20 +49,7 @@ class CartController extends Controller
      */
     public function store(Request $request)
     {
-        $duplicata = Cart::search(function ($cartItem, $rowId) use ($request) {
-            return $cartItem->id == $request->id;
-        });
-
-        if ($duplicata->isNotEmpty()) {
-            return redirect()->route('welcome')->with('success', 'Le produit a déjà été ajouté.');
-        }
-
-        $product = Produit::find($request->id);
-
-        Cart::add($product->id, $product->produits_nom, 1, $product->price)
-            ->associate('App\Product');
-
-        return redirect()->route('welcome')->with('success', 'Le produit a bien été ajouté.');
+        //
     }
 
     /**
@@ -93,10 +92,8 @@ class CartController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($rowId)
+    public function destroy($id)
     {
-        Cart::remove($rowId);
-
-        return back()->with('success', 'Le produit a été supprimé.');
+        //
     }
 }

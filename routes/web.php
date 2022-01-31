@@ -38,7 +38,5 @@ Route::middleware('auth')->group(function () {
         Route::post('/coupon', 'CartController@storeCoupon')->name('cart.store.coupon');
     Route::delete('/coupon', 'CartController@destroyCoupon')->name('cart.destroy.coupon');
 
-        Route::get('/paiement', 'CheckController@index')->name('check.index');
-        Route::post('/paiement', 'CheckController@store')->name('check.store');
-        Route::get('/merci', 'CheckController@thankyou')->name('check.thankyou');
- 
+     /* Checkout Routes */
+Route::get('/paiement', 'CheckoutController@index')->name('checkout.index');
