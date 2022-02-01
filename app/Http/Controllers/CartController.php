@@ -48,7 +48,7 @@ class CartController extends Controller
         $product = Produit::find($request->id);
 
         Cart::add($product->id, $product->produits_nom, 1, $product->price)
-            ->associate('App\Product');
+            ->associate('App\Produit');
 
         return redirect()->route('welcome')->with('success', 'Le produit a bien été ajouté.');
     }
