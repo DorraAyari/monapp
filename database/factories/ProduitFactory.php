@@ -8,12 +8,15 @@ use Faker\Generator as Faker;
 
 $factory->define(Produit::class, function (Faker $faker) {
     return [
-        'produits_nom'=> $faker->word,
-        'produits_description'=> $faker->sentence,
-        'price'=>$faker->randomFloat(3),
-        'slug'=> $faker->sentence,
+      'title' => $faker->sentence(4),
+                'slug' => $faker->slug,
+                'subtitle' => $faker->sentence(5),
+                'description' => $faker->text,
+                'price' => $faker->numberBetween(15, 300) * 100,
+                'image' =>$faker->imageUrl,
         'catalogue_id'=>Catalogue::get('id')->random(),
-        'pics'=>$faker->imageUrl,
-        'email'=> $faker->email,
+      
+
+
     ];
 });

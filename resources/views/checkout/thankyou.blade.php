@@ -1,4 +1,5 @@
 @extends('layouts.app')
+
 @section('content')
     <div class="col-md-12">
         <div class="jumbotron text-center">
@@ -9,7 +10,7 @@
                 Vous rencontrez un problème? <a href="#">Nous contacter</a>
             </p>
             <p class="lead">
-                <a class="btn btn-primary btn-sm" href="/" role="button">Continuer vers la boutique</a>
+                <a class="btn btn-primary btn-sm" href="{{ route('welcome') }}" role="button">Continuer vers la boutique</a>
             </p>
         </div>
     </div>

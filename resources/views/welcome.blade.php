@@ -55,15 +55,16 @@
         @foreach ($produits as $produit)
         <div class="col-lg-4 col-md-6 mb-4">
                 <div class="card h-100">
-                    <a href="#!"><img class="card-img-top" src="{{ $produit->pics }}" alt="..." /></a>
+                    <a href="#!"><img class="card-img-top" src="{{ $produit->image }}" alt="..." /></a>
                     <div class="card-body">
-                        <h4 class="card-title"><a href="#!">{{ $produit->produits_nom }}</a></h4>
+                        <h4 class="card-title"><a href="#!">{{ $produit->title }}</a></h4>
+                        <p class="mb-auto text-muted">{{ $produit->subtitle }}</p>
                         <h5>${{ $produit->price}}</h5>
                         <p class="card-text">{{ $produit->price}}</p>
                         <form action="{{ route('cart.store') }}"method="post">
                         @csrf
                         <input type="hidden" name="id" value="{{ $produit->id }}">
-                    <input type="hidden" name="produits_nom" value="{{ $produit->produits_nom }}">
+                    <input type="hidden" name="produits_nom" value="{{ $produit->title}}">
                   <input type="hidden" name="price" value="{{ $produit->price }}">
                         <button type="submit" class="btn btn-dark">ajouter au panier</button>
                         </form>

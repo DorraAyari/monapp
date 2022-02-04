@@ -1,40 +1,44 @@
 @extends('layouts.app')
-@section('extra-script')
+
 @section('extra-meta')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
+
+@section('extra-script')
 <script src="https://js.stripe.com/v3/"></script>
 @endsection
+
 @section('content')
-<div class="container">
-    <br>
-    <li class="d-flex justify-content-between py-3 border-bottom"><h5>Total Payment €{{ Cart::total() }}</h5>
-    <br>
-    <br>
-    <div class="col-md-12">
-  <h3 class="btn  btn-block mt-3">Procéder au paiement</h3>
-  <div class="col-md-6 my-3 mx-auto">
-      <form action="{{ route('check.store') }}" method="POST" id="payment-form">
-          @csrf
-          <div id="card-element">
-          </div>
-          <div id="card-errors" role="alert"></div>
-          <a href="/merci" class="btn btn-success btn-block mt-3" >Soumettre le paiement</a>
-      </form>
+<div class="col-md-12">
+    <a href="{{ route('cart.index') }}" class="btn btn-sm btn-secondary mt-3">Revenir au panier</a>
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <h4 class="text-center pt-5">Procéder au paiement</h4>
+            <form action="{{ route('checkout.store') }}" method="POST" class="my-4" id="payment-form">
+                @csrf
+                <div id="card-element">
+                <!-- Elements will create input elements here -->
+                </div>
+
+                <!-- We'll put the error messages in this element -->
+                <div id="card-errors" role="alert"></div>
+
+                <button class="btn btn-success btn-block mt-3" id="submit">
+                    <i class="fa fa-credit-card" aria-hidden="true"></i> Payer maintenant ({{ (Cart::total()) }})
+                </button>
+            </form>
+        </div>
     </div>
 </div>
-<style>
-    .h3{
-        text-align: :center;
-    }
-</style>
 @endsection
 
 @section('extra-js')
 <script>
-    
-var stripe = Stripe('pk_test_LI2JPcWlrGhmjPeXnppRdMxu00J9G81wVp');
-var elements = stripe.elements();
+    //Suppression de la barre de navigation
+   
+    // Paiement Stripe
+    var stripe = Stripe('pk_test_7SgrmpMGeJlIACKBTE2YbTXF00Q3876Bck');
+    var elements = stripe.elements();
     var style = {
         base: {
         color: "#32325d",

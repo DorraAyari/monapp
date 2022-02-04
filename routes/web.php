@@ -32,16 +32,18 @@ Route::middleware('auth')->group(function () {
         Route::resource('commandes', 'Admin\CommandeController');
         Route::resource('paiements', 'Admin\PaiementController');
         Route::resource('paniers', 'Admin\PanierController');  
-        Route::post('/panier/ajouter', 'CartController@store')->name('cart.store');
-        Route::get('/panier', 'CartController@index')->name('cart.index');
-        Route::delete('/panier/{rowId}', 'CartController@destroy')->name('cart.destroy');
-        Route::post('/coupon', 'CartController@storeCoupon')->name('cart.store.coupon');
-    Route::delete('/coupon', 'CartController@destroyCoupon')->name('cart.destroy.coupon');
+/* Cart Routes */
+Route::get('/panier', 'CartController@index')->name('cart.index');
+Route::post('/panier/ajouter', 'CartController@store')->name('cart.store');
+Route::delete('/panier/{rowId}', 'CartController@destroy')->name('cart.destroy');
 
-    Route::get('/paiement', 'CheckController@index')->name('check.index');
-    Route::post('/paiement', 'CheckController@charge')->name('check.charge');
-    Route::post('/paiement', 'CheckController@store')->name('check.store');
-    Route::get('/merci', function () {
-        return view('check.thankyou');
-    });
-    
+Route::get('/videpanier', function () {
+    Cart::destroy();
+});
+
+/* Checkout Routes */
+Route::get('/paiement', 'CheckoutController@index')->name('checkout.index');
+Route::post('/paiement', 'CheckoutController@store')->name('checkout.store');
+Route::get('/merci', function () {
+    return view('checkout.thankyou');
+});
