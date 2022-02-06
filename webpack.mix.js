@@ -20,3 +20,4 @@ const mix = require('laravel-mix');
  .scripts([
      'resources/js/dashboard.js'
  ], 'public/js/admin.js');
+ 
